@@ -24,6 +24,26 @@ class BitcoinExchange
 			public:
 				virtual const char* what() const throw();
 		};
+		class WrongFormatException : public std::exception
+		{
+			public:
+				virtual const char* what() const throw();
+		};
+		class WrongYearException : public std::exception
+		{
+			public:
+				virtual const char* what() const throw();
+		};
+		class WrongMonthException : public std::exception
+		{
+			public:
+				virtual const char* what() const throw();
+		};
+		class WrongDayException : public std::exception
+		{
+			public:
+				virtual const char* what() const throw();
+		};
 	
 	
 	private:
