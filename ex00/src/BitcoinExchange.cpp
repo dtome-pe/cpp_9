@@ -18,13 +18,13 @@ BitcoinExchange::BitcoinExchange()
 }
 
 BitcoinExchange::BitcoinExchange(BitcoinExchange &copy)
-{
-	(void) copy;
+{	
+	_csv = copy._csv;
 }
 
 BitcoinExchange& BitcoinExchange::operator=(const BitcoinExchange &instance)
 {
-	(void) instance;
+	_csv = instance._csv;
 	return (*this);
 }
 

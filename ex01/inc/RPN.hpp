@@ -4,7 +4,7 @@
 class RPN
 {	
 	private:
-
+	
 	public:
 		RPN();
 		RPN(unsigned int n);

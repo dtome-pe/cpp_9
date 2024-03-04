@@ -5,6 +5,9 @@
 
 class BitcoinExchange
 {
+	private:
+		std::multimap<std::string, float>_csv;
+
 	public:
 		BitcoinExchange();
 		BitcoinExchange(BitcoinExchange &copy);
@@ -25,7 +28,4 @@ class BitcoinExchange
 			public:
 				virtual const char* what() const throw();
 		};
-	
-	private:
-		std::multimap<std::string, float>_csv;
 };
