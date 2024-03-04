@@ -9,6 +9,7 @@ int main(int argc, char *argv[])
 		BitcoinExchange a;
 
 		a.bounceDatabase(argv[1]);
+		a.calculate();
 	}
 	catch(const std::exception& e)
 	{

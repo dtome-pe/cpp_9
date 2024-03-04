@@ -1,5 +1,6 @@
 #include <string>
-#include <map>
+#include <vector>
+#include <set>
 #include <iostream>
 
 class BitcoinExchange
@@ -10,43 +11,24 @@ class BitcoinExchange
 		BitcoinExchange& operator=(const BitcoinExchange &instance);
 		~BitcoinExchange();
 
-		void bounceDatabase(std::string argv);
+		void	bounceDatabase(std::string argv);
+		void	calculate();
 
-		void printDatabase(std::multimap<std::string, float> &db);
+		void	printCsv();
+		void 	printDb();
 
-		class WrongArgumentsException : public std::exception
+		class 	WrongArgumentsException : public std::exception
 		{
 			public:
 				virtual const char* what() const throw();
 		};
-		class FileNotOpenException : public std::exception
+		class 	FileNotOpenException : public std::exception
 		{
 			public:
 				virtual const char* what() const throw();
 		};
-		class WrongFormatException : public std::exception
-		{
-			public:
-				virtual const char* what() const throw();
-		};
-		class WrongYearException : public std::exception
-		{
-			public:
-				virtual const char* what() const throw();
-		};
-		class WrongMonthException : public std::exception
-		{
-			public:
-				virtual const char* what() const throw();
-		};
-		class WrongDayException : public std::exception
-		{
-			public:
-				virtual const char* what() const throw();
-		};
-	
 	
 	private:
-		std::multimap<std::string, float>_csv;
-		std::multimap<std::string, float>_db;
+		std::multiset<std::string>_csv;
+		std::vector<std::string>_db;
 };
