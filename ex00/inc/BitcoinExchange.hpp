@@ -1,6 +1,6 @@
 #include <string>
 #include <vector>
-#include <set>
+#include <map>
 #include <iostream>
 
 class BitcoinExchange
@@ -29,6 +29,6 @@ class BitcoinExchange
 		};
 	
 	private:
-		std::multiset<std::string>_csv;
+		std::multimap<std::string, float>_csv;
 		std::vector<std::string>_db;
 };

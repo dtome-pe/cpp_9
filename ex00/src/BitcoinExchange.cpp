@@ -13,8 +13,8 @@ BitcoinExchange::BitcoinExchange()
 	std::string	line;
 	std::getline(csv, line);
 	while (std::getline(csv, line))	
-		_csv.insert(line);
-	//printDatabase(_csv);
+		_csv.insert(std::make_pair(line.substr(0, line.find(",")), std::atof(line.substr(line.find(",") + 1, line.length()).c_str())));
+	//printCsv();
 }
 
 BitcoinExchange::BitcoinExchange(BitcoinExchange &copy)
@@ -48,9 +48,14 @@ void	BitcoinExchange::bounceDatabase(std::string argv)
 static bool	checkValue(std::string &value)
 {	
 	//std::cout << "value is: " << value << std::endl;
-	if (std::atof(value.c_str()) < 0 || std::atof(value.c_str()) > 1000)
+	if (std::atof(value.c_str()) < 0)
 	{	
-		std::cerr << "Error: Value too large or to small. (0 to 1000)" << std::endl;
+		std::cerr << "Error: Negative value. (0 to 1000)" << std::endl;
+		return (false);
+	}
+	else if(std::atof(value.c_str()) > 1000)
+	{
+		std::cerr << "Error: Value too big. (0 to 1000)" << std::endl;
 		return (false);
 	}
 	else
@@ -134,17 +139,26 @@ void	BitcoinExchange::calculate()
 		if (!checkLine(_db[i]))
 			continue ;
 		std::string date = _db[i].substr(0, _db[i].find('|') - 1);
-		std::string value = _db[i].substr(_db[i].find('|') + 2, _db[i].length());
+		float value = std::atof(_db[i].substr(_db[i].find('|') + 1, _db[i].length()).c_str());
 
-		std::cout << "date: " << date << " value: " << value << std::endl;
+		if (_csv.count(date))
+		{
+			std::multimap<std::string, float>::iterator it = _csv.find(date);
+			std::cout << date << " => " << value << " = " << value * it->second << std::endl;
+		}
+		else
+		{
+			std::multimap<std::string, float>::iterator it = _csv.lower_bound(date);
+			std::cout << date << " => " << value << " = " << value * it->second << std::endl;
+		}
 	}
 }
 
 void	BitcoinExchange::printCsv()
 {
-	for (std::multiset<std::string>::iterator it = _csv.begin(); it != _csv.end(); it++)
+	for (std::multimap<std::string, float>::iterator it = _csv.begin(); it != _csv.end(); it++)
 	{
-		std::cout << *it << std::endl;
+		std::cout << "key: " << it->first << " value: " << it->second << std::endl;
 	}
 }
 
