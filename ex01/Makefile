@@ -1,5 +1,5 @@
-NAME = span
-SRC = $(addprefix $(DIR_SRC), main.cpp Span.cpp)
+NAME = RPN
+SRC = $(addprefix $(DIR_SRC), main.cpp RPN.cpp)
 FLAGS = -std=c++98 -Wall -Wextra -Werror
 DEPFLAGS = -MMD -MP
 DIR_OBJ = tmp/

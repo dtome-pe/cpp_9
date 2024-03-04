@@ -11,11 +11,9 @@ class BitcoinExchange
 		BitcoinExchange& operator=(const BitcoinExchange &instance);
 		~BitcoinExchange();
 
-		void	bounceDatabase(std::string argv);
-		void	calculate();
+		void	calculate(std::string argv);
 
 		void	printCsv();
-		void 	printDb();
 
 		class 	WrongArgumentsException : public std::exception
 		{
@@ -30,5 +28,4 @@ class BitcoinExchange
 	
 	private:
 		std::multimap<std::string, float>_csv;
-		std::vector<std::string>_db;
 };

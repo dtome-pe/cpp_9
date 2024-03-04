@@ -33,18 +33,6 @@ BitcoinExchange::~BitcoinExchange()
 
 }
 
-void	BitcoinExchange::bounceDatabase(std::string argv)
-{
-	std::ifstream db(argv.c_str());
-	if (!db.is_open())
-		throw BitcoinExchange::FileNotOpenException();
-	std::string	line;
-	std::getline(db, line);
-	while (std::getline(db, line))
-		_db.push_back(line);
-	//printDatabase(_db);
-}
-
 static bool	checkValue(std::string &value)
 {	
 	//std::cout << "value is: " << value << std::endl;
@@ -132,14 +120,19 @@ static bool	checkLine(const std::string &line)
 		return (true);
 }
 
-void	BitcoinExchange::calculate()
-{
-	for (unsigned int i = 0; i < _db.size(); i++)
+void	BitcoinExchange::calculate(std::string argv)
+{	
+	std::ifstream db(argv.c_str());
+	if (!db.is_open())
+		throw BitcoinExchange::FileNotOpenException();
+	std::string	line;
+	std::getline(db, line);
+	while (std::getline(db, line))
 	{
-		if (!checkLine(_db[i]))
+		if (!checkLine(line))
 			continue ;
-		std::string date = _db[i].substr(0, _db[i].find('|') - 1);
-		float value = std::atof(_db[i].substr(_db[i].find('|') + 1, _db[i].length()).c_str());
+		std::string date = line.substr(0, line.find('|') - 1);
+		float value = std::atof(line.substr(line.find('|') + 1, line.length()).c_str());
 
 		if (_csv.count(date))
 		{
@@ -159,14 +152,6 @@ void	BitcoinExchange::printCsv()
 	for (std::multimap<std::string, float>::iterator it = _csv.begin(); it != _csv.end(); it++)
 	{
 		std::cout << "key: " << it->first << " value: " << it->second << std::endl;
-	}
-}
-
-void	BitcoinExchange::printDb()
-{
-	for (std::vector<std::string>::iterator it = _db.begin(); it != _db.end(); it++)
-	{
-		std::cout << *it << std::endl;
 	}
 }
 

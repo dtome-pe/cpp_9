@@ -8,8 +8,7 @@ int main(int argc, char *argv[])
 			throw BitcoinExchange::WrongArgumentsException();
 		BitcoinExchange a;
 
-		a.bounceDatabase(argv[1]);
-		a.calculate();
+		a.calculate(argv[1]);
 	}
 	catch(const std::exception& e)
 	{
