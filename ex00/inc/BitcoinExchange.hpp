@@ -1,7 +1,10 @@
-#include <string>
-#include <vector>
-#include <map>
-#include <iostream>
+#ifndef BITCOINEXCHANGE_HPP
+# define BITCOINEXCHANGE_HPP
+
+# include <string>
+# include <vector>
+# include <map>
+# include <iostream>
 
 class BitcoinExchange
 {
@@ -29,3 +32,5 @@ class BitcoinExchange
 				virtual const char* what() const throw();
 		};
 };
+
+#endif
