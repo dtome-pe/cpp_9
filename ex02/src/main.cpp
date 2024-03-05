@@ -11,8 +11,9 @@ int main(int argc, char *argv[])
 		
 		//a.printAux();
 		a.generatePairsVec();
-		a.printPairs();
-		a.printAux();
+		//a.printPairs();
+		//a.printAux();
+		a.sortHighestVec();
     } 
 	catch (std::exception &e) 
 	{

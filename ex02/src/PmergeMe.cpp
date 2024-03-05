@@ -69,6 +69,11 @@ void PmergeMe::generatePairsVec()
 	}
 }
 
+void PmergeMe::sortHighestVec()
+{
+	
+}
+
 void PmergeMe::printAux()
 {	
 	std::cout << "_auxVec: ";

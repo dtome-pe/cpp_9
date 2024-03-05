@@ -26,6 +26,7 @@ class PmergeMe
 
 		/*vector*/
 		void	generatePairsVec();
+		void	sortHighestVec();
 
 		void	printAux();
 		void	printPairs();
