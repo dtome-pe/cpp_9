@@ -16,6 +16,8 @@ class PmergeMe
 		std::deque<int>						_auxDeque;
 		std::deque<std::pair<int, int> >	_pairDeque;
 		std::deque<int>						_sortedDeque;
+
+		size_t								_n;
 	public:
 		PmergeMe(std::string argv);
 		PmergeMe(PmergeMe &copy);
@@ -25,7 +27,8 @@ class PmergeMe
 		/*vector*/
 		void	generatePairsVec();
 
-		void	print();
+		void	printAux();
+		void	printPairs();
 
 		class 	WrongArgumentsException : public std::exception
 		{

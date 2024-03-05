@@ -8,7 +8,11 @@ int main(int argc, char *argv[])
        		throw PmergeMe::WrongArgumentsException();
 		
 		PmergeMe a(argv[1]);
-		a.print();
+		
+		//a.printAux();
+		a.generatePairsVec();
+		a.printPairs();
+		a.printAux();
     } 
 	catch (std::exception &e) 
 	{

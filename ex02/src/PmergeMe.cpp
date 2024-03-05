@@ -1,10 +1,12 @@
 #include "../inc/PmergeMe.hpp"
 #include <sstream>
 #include <limits>
+#include <algorithm>
+#include <utility>
 
 static bool isInt(const std::string &str)
 {
-	if (!str.find_first_not_of("0123456789"))
+	if (str.find_first_not_of("0123456789") != std::string::npos)
 		return (false);
 	long x = 0;
 	std::stringstream number(str);
@@ -32,6 +34,7 @@ PmergeMe::PmergeMe(std::string argv)
 		_auxDeque.push_back(x);
 		ss >> std::ws;
 	}
+	_n = _auxVec.size();
 }
 
 PmergeMe::PmergeMe(PmergeMe &copy)
@@ -52,10 +55,21 @@ PmergeMe::~PmergeMe()
 
 void PmergeMe::generatePairsVec()
 {
+	size_t size = _n;
+	if (_n % 2 != 0)
+		size = _n - 1;
+	for (unsigned int i = 0; i < size; i++)
+	{	
+		if (_auxVec[i] < _auxVec[i + 1])
+			std::swap(_auxVec[i], _auxVec[i + 1]);
+		_pairVec.push_back(std::make_pair(_auxVec[i], _auxVec[i + 1]));
+		_auxVec.erase(_auxVec.begin() + i);
 
+		size -= 1;
+	}
 }
 
-void PmergeMe::print()
+void PmergeMe::printAux()
 {	
 	std::cout << "_auxVec: ";
     for(std::vector<int>::iterator it = _auxVec.begin(); it != _auxVec.end() ; ++it){
@@ -68,6 +82,19 @@ void PmergeMe::print()
         std::cout << *it << " ";
     }
     std::cout << std::endl;
+}
+
+void PmergeMe::printPairs()
+{	
+	std::cout << "_pairVec: " << std::endl;
+    for(std::vector<std::pair<int, int> >::iterator it = _pairVec.begin(); it != _pairVec.end() ; ++it){
+        std::cout << it->first << ":" << it->second << std::endl;
+    }
+
+	std::cout << "_pairDeque: " << std::endl;
+	for(std::deque<std::pair<int, int> >::iterator it = _pairDeque.begin(); it != _pairDeque.end() ; ++it){
+        std::cout << it->first << ":" << it->second << std::endl;
+    }
 }
 
 const char*PmergeMe::WrongArgumentsException::what(void) const throw()
