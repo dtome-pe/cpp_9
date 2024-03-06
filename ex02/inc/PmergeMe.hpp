@@ -9,15 +9,15 @@
 class PmergeMe
 {
 	private:
-		std::vector<int>					_auxVec;
-		std::vector<std::pair<int, int> >	_pairVec;
-		std::vector<int>					_sortedVec;
+		std::vector<unsigned int>							_auxVec;
+		std::vector<std::pair<unsigned int, unsigned int> > _pairVec;
+		std::vector<unsigned int>							_sortedVec;
 
-		std::deque<int>						_auxDeque;
-		std::deque<std::pair<int, int> >	_pairDeque;
-		std::deque<int>						_sortedDeque;
+		std::deque<unsigned int>							_auxDeque;
+		std::deque<unsigned int>							_sortedDeque;
 
-		size_t								_n;
+		size_t												_n;
+		bool												_odd;
 	public:
 		PmergeMe(std::string argv);
 		PmergeMe(PmergeMe &copy);
@@ -25,11 +25,11 @@ class PmergeMe
 		~PmergeMe();
 
 		/*vector*/
-		void	generatePairsVec();
-		void	sortHighestVec();
+		void	sortVec();
 
 		void	printAux();
 		void	printPairs();
+		void	printSorted();
 
 		class 	WrongArgumentsException : public std::exception
 		{

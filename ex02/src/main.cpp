@@ -10,10 +10,11 @@ int main(int argc, char *argv[])
 		PmergeMe a(argv[1]);
 		
 		//a.printAux();
-		a.generatePairsVec();
-		//a.printPairs();
+		a.sortVec();
+		a.printAux();
+		a.printSorted();
+		a.printPairs();
 		//a.printAux();
-		a.sortHighestVec();
     } 
 	catch (std::exception &e) 
 	{
