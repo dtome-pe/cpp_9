@@ -104,7 +104,7 @@ static std::vector<std::pair<unsigned int, unsigned int> >mergeVec(std::vector<s
 	return (merge(left, right));
 }
 
-/* static unsigned int	getFirst(std::vector<std::pair<unsigned int, unsigned int> > &pairVec, std::vector<unsigned int> &aux, unsigned int element)
+static unsigned int	getFirst(std::vector<std::pair<unsigned int, unsigned int> > &pairVec, std::vector<unsigned int> &aux, unsigned int element)
 {	
 	unsigned int ret = 0;
 	for (unsigned int i = 0; i < pairVec.size(); i++)
@@ -121,15 +121,17 @@ static std::vector<std::pair<unsigned int, unsigned int> >mergeVec(std::vector<s
 		}
 	}
 	return (ret);
-} */
+}
 
-/* static std::vector<unsigned int>insertVec(std::vector<unsigned int> &sorted, std::vector<unsigned int> &aux, std::vector<std::pair<unsigned int, unsigned int> > &pairVec)
-{
+static std::vector<unsigned int>insertVec(std::vector<unsigned int> &sorted, std::vector<unsigned int> &aux, std::vector<std::pair<unsigned int, unsigned int> > &pairVec)
+{	
+	for (unsigned int i = 0; i < pairVec.size(); i++)
+		sorted.push_back(pairVec[i].first);
 	std::vector<unsigned int>::iterator it = sorted.begin();
 	sorted.insert(it, getFirst(pairVec, aux, sorted[0]));
 
 	return (sorted);
-} */
+}
 
 void PmergeMe::sortVec()
 {	
@@ -151,7 +153,7 @@ void PmergeMe::sortVec()
 	else
 		_auxVec.erase(_auxVec.begin(), _auxVec.end() - 1);
 	_pairVec = mergeVec(_pairVec);
-	//insertVec(_sortedVec, _auxVec, _pairVec);
+	insertVec(_sortedVec, _auxVec, _pairVec);
 }
 
 void PmergeMe::printAux()
