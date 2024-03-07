@@ -10,8 +10,9 @@ class PmergeMe
 {
 	private:
 		std::vector<unsigned int>							_auxVec;
+		std::vector<unsigned int>							_pendVec;
 		std::vector<std::pair<unsigned int, unsigned int> > _pairVec;
-		std::vector<unsigned int>							_sortedVec;
+		std::vector<unsigned int>							_mainVec;
 
 		std::deque<unsigned int>							_auxDeque;
 		std::deque<unsigned int>							_sortedDeque;
@@ -28,8 +29,9 @@ class PmergeMe
 		void	sortVec();
 
 		void	printAux();
+		void	printPend();
 		void	printPairs();
-		void	printSorted();
+		void	printMain();
 
 		class 	WrongArgumentsException : public std::exception
 		{
