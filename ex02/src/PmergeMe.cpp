@@ -182,7 +182,10 @@ static std::vector<unsigned int>insertVec(std::vector<unsigned int> &main, std::
 
         while (true)
         {
-            main.insert(main.begin() + getInsertion(jacobsthal_diff[k], *it, main, pend, it), *it);
+            std::vector<unsigned int>::iterator insertion = main.begin();
+			while ()
+            main.insert(insertion, *it);
+
             it = pend.erase(it);
             if (it == pend.begin()) break;
             --it;
@@ -201,9 +204,7 @@ void PmergeMe::sortVec()
 		if (_auxVec[i] < _auxVec[i + 1])
 			std::swap(_auxVec[i], _auxVec[i + 1]);
 		_pairVec.push_back(std::make_pair(_auxVec[i], _auxVec[i + 1]));
-		//_sortedVec.push_back(_auxVec[i]);
 		_auxVec.erase(_auxVec.begin() + i);
-		//_auxVec.erase(it + i + 1);
 		size--;
 	}
 	if (!_odd)
