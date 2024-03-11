@@ -124,6 +124,27 @@ static unsigned int	getFirst(std::vector<std::pair<unsigned int, unsigned int> >
 	return (ret);
 }
 
+static unsigned int	getInsertion(unsigned int dist, unsigned int pendElement,
+ std::vector<unsigned int> &pend, std::vector<unsigned int> &main, std::vector<unsigned int>::iterator &it)
+{	
+	(void) pend;
+	
+	std::cout << "it es " << *it << std::endl;
+	unsigned int i = 0;
+
+	while (dist)
+	{
+		std::cout << "hola" << std::endl;
+		if (pendElement > main[i] && pendElement < main[i + 1])
+		{
+			return (i + 1);
+		}
+		i++;
+		dist--;
+	}
+	return (i);
+}
+
 static std::vector<unsigned int>insertVec(std::vector<unsigned int> &main, std::vector<unsigned int> &pend,
  std::vector<unsigned int> &aux, std::vector<std::pair<unsigned int, unsigned int> > &pairVec, unsigned int n)
 {	
@@ -154,19 +175,14 @@ static std::vector<unsigned int>insertVec(std::vector<unsigned int> &main, std::
 	main.insert(it, getFirst(pairVec, pend, main[0]));
 	for (int k = 0 ; ; ++k)
     {
-        uint64_t dist = jacobsthal_diff[k];
+        u_int64_t dist = jacobsthal_diff[k];
         if (dist >= pend.size()) break;
         std::vector<unsigned int>::iterator it = pend.begin();
         std::advance(it, dist);
 
         while (true)
         {
-            std::vector<unsigned int>::iterator insertion;
-
-			
-				
-            main.insert(insertion, *it);
-
+            main.insert(main.begin() + getInsertion(jacobsthal_diff[k], *it, main, pend, it), *it);
             it = pend.erase(it);
             if (it == pend.begin()) break;
             --it;
