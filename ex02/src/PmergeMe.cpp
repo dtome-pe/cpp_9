@@ -89,7 +89,7 @@ std::vector<std::pair<unsigned int, unsigned int> > merge(std::vector<std::pair<
     return result;
 }
 
-static std::vector<std::pair<unsigned int, unsigned int> >mergeVec(std::vector<std::pair<unsigned int, unsigned int> >&vec)
+static std::vector<std::pair<unsigned int, unsigned int> >mergeSortVec(std::vector<std::pair<unsigned int, unsigned int> >&vec)
 {
 	if (vec.size() <= 1)
 	{
@@ -99,13 +99,13 @@ static std::vector<std::pair<unsigned int, unsigned int> >mergeVec(std::vector<s
 	std::vector<std::pair<unsigned int, unsigned int> >left(vec.begin(), vec.begin() + mid);
     std::vector<std::pair<unsigned int, unsigned int> >right(vec.begin() + mid, vec.end());
 
-	left = mergeVec(left);
-    right = mergeVec(right);
+	left = mergeSortVec(left);
+    right = mergeSortVec(right);
 
 	return (merge(left, right));
 }
 
-static unsigned int	getFirst(std::vector<std::pair<unsigned int, unsigned int> > &pairVec, std::vector<unsigned int> &aux, unsigned int element)
+/* static unsigned int	getFirst(std::vector<std::pair<unsigned int, unsigned int> > &pairVec, std::vector<unsigned int> &aux, unsigned int element)
 {	
 	unsigned int ret = 0;
 	for (unsigned int i = 0; i < pairVec.size(); i++)
@@ -122,25 +122,11 @@ static unsigned int	getFirst(std::vector<std::pair<unsigned int, unsigned int> >
 		}
 	}
 	return (ret);
-}
+} */
 
 static std::vector<unsigned int>insertVec(std::vector<unsigned int> &main, std::vector<unsigned int> &pend,
  std::vector<unsigned int> &aux, std::vector<std::pair<unsigned int, unsigned int> > &pairVec, unsigned int n)
-{	
-	(void)	n;
-	u_int64_t jacobsthal_diff[] = {
-        2u, 2u, 6u, 10u, 22u, 42u, 86u, 170u, 342u, 682u, 1366u,
-        2730u, 5462u, 10922u, 21846u, 43690u, 87382u, 174762u, 349526u, 699050u,
-        1398102u, 2796202u, 5592406u, 11184810u, 22369622u, 44739242u, 89478486u,
-        178956970u, 357913942u, 715827882u, 1431655766u, 2863311530u, 5726623062u,
-        11453246122u, 22906492246u, 45812984490u, 91625968982u, 183251937962u,
-        366503875926u, 733007751850u, 1466015503702u, 2932031007402u, 5864062014806u,
-        11728124029610u, 23456248059222u, 46912496118442u, 93824992236886u, 187649984473770u,
-        375299968947542u, 750599937895082u, 1501199875790165u, 3002399751580331u,
-        6004799503160661u, 12009599006321322u, 24019198012642644u, 48038396025285288u,
-        96076792050570576u, 192153584101141152u, 384307168202282304u, 768614336404564608u,
-        1537228672809129216u, 3074457345618258432u, 6148914691236516864u
-    };
+{
 	for (unsigned int i = 0; i < pairVec.size(); i++)
 		main.push_back(pairVec[i].first);
 	for (unsigned int i = 0; i < pairVec.size(); i++)
@@ -150,26 +136,13 @@ static std::vector<unsigned int>insertVec(std::vector<unsigned int> &main, std::
 		pend.push_back(aux[0]);
 		aux.erase(aux.begin());
 	}
-	std::vector<unsigned int>::iterator it = main.begin();
-	main.insert(it, getFirst(pairVec, pend, main[0]));
-	for (int k = 0 ; ; ++k)
-    {
-        uint64_t dist = jacobsthal_diff[k];
-        if (dist >= pend.size()) break;
-        std::vector<unsigned int>::iterator it = pend.begin();
-        std::advance(it, dist);
-
-        while (true)
-        {
-            std::vector<unsigned int>::iterator insertion = main.begin();
-			while ()
-            main.insert(insertion, *it);
-
-            it = pend.erase(it);
-            if (it == pend.begin()) break;
-            --it;
-        }
-    }
+	main.insert(main.begin(), pend[0]);
+	int tmp = n / 2 - 1;
+	while (tmp)
+	{
+		
+		tmp--;
+	}
 	return (main);
 }
 
@@ -190,7 +163,7 @@ void PmergeMe::sortVec()
 		_auxVec.erase(_auxVec.begin(), _auxVec.end());
 	else
 		_auxVec.erase(_auxVec.begin(), _auxVec.end() - 1);
-	_pairVec = mergeVec(_pairVec);
+	_pairVec = mergeSortVec(_pairVec);
 	insertVec(_mainVec, _pendVec, _auxVec, _pairVec, _n);
 }
 
