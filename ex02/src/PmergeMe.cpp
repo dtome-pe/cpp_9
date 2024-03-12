@@ -122,7 +122,7 @@ static std::vector<std::pair<unsigned int, unsigned int> >mergeSortVec(std::vect
 		}
 	}
 	return (ret);
-} */
+}
 
 static std::vector<unsigned int>insertVec(std::vector<unsigned int> &main, std::vector<unsigned int> &pend,
  std::vector<unsigned int> &aux, std::vector<std::pair<unsigned int, unsigned int> > &pairVec, unsigned int n)
@@ -136,13 +136,26 @@ static std::vector<unsigned int>insertVec(std::vector<unsigned int> &main, std::
 		pend.push_back(aux[0]);
 		aux.erase(aux.begin());
 	}
-	main.insert(main.begin(), pend[0]);
-	int tmp = n / 2 - 1;
-	while (tmp)
-	{
-		
-		tmp--;
-	}
+	std::vector<unsigned int>::iterator it = main.begin();
+	main.insert(it, getFirst(pairVec, pend, main[0]));
+	for (int k = 0 ; ; ++k)
+    {
+        uint64_t dist = jacobsthal_diff[k];
+        if (dist >= pend.size()) break;
+        std::vector<unsigned int>::iterator it = pend.begin();
+        std::advance(it, dist);
+
+        while (true)
+        {
+            std::vector<unsigned int>::iterator insertion = main.begin();
+			while ()
+            main.insert(insertion, *it);
+
+            it = pend.erase(it);
+            if (it == pend.begin()) break;
+            --it;
+        }
+    }
 	return (main);
 }
 
