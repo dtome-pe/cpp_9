@@ -43,6 +43,11 @@ class PmergeMe
 			public:
 				virtual const char* what() const throw();
 		};
+		class 	DuplicateErrorException : public std::exception
+		{
+			public:
+				virtual const char* what() const throw();
+		};
 };
 
 #endif

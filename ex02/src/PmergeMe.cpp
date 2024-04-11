@@ -34,6 +34,17 @@ PmergeMe::PmergeMe(std::string argv)
 		_auxDeque.push_back(x);
 		ss >> std::ws;
 	}
+	std::vector<unsigned int> uniqueCheck;
+    for (unsigned int i = 0; i < _auxVec.size(); i++) 
+	{
+        for (unsigned int j = 0; j < uniqueCheck.size(); j++)
+		{
+			if (_auxVec[i] == uniqueCheck[j])
+				throw PmergeMe::DuplicateErrorException();
+		}
+		uniqueCheck.push_back(_auxVec[i]);
+    }
+
 	_n = _auxVec.size();
 	if (_n % 2 != 0)
 		_odd = true;
@@ -58,7 +69,7 @@ PmergeMe::~PmergeMe()
 
 }
 
-std::vector<std::pair<unsigned int, unsigned int> > merge(std::vector<std::pair<unsigned int, unsigned int> >& left, std::vector<std::pair<unsigned int, unsigned int> >& right)
+static std::vector<std::pair<unsigned int, unsigned int> > merge(std::vector<std::pair<unsigned int, unsigned int> >& left, std::vector<std::pair<unsigned int, unsigned int> >& right)
 {
 	std::vector<std::pair<unsigned int, unsigned int> > result;
 
@@ -105,7 +116,30 @@ static std::vector<std::pair<unsigned int, unsigned int> >mergeSortVec(std::vect
 	return (merge(left, right));
 }
 
-/* static unsigned int	getFirst(std::vector<std::pair<unsigned int, unsigned int> > &pairVec, std::vector<unsigned int> &aux, unsigned int element)
+void PmergeMe::sortVec()
+{	
+	size_t size = _n;
+	if (_odd)
+		size -=  1;
+	for (unsigned int i = 0; i < size - 1; i++)
+	{	
+		if (_auxVec[i] < _auxVec[i + 1])
+			std::swap(_auxVec[i], _auxVec[i + 1]);
+		_pairVec.push_back(std::make_pair(_auxVec[i], _auxVec[i + 1]));
+		_auxVec.erase(_auxVec.begin() + i);
+		size--;
+	}
+	if (!_odd)
+		_auxVec.erase(_auxVec.begin(), _auxVec.end());
+	else
+		_auxVec.erase(_auxVec.begin(), _auxVec.end() - 1);
+	//_pairVec = mergeSortVec(_pairVec);
+	//insertVec(_mainVec, _pendVec, _auxVec, _pairVec, _n);
+}
+
+/* 
+
+static unsigned int	getFirst(std::vector<std::pair<unsigned int, unsigned int> > &pairVec, std::vector<unsigned int> &aux, unsigned int element)
 {	
 	unsigned int ret = 0;
 	for (unsigned int i = 0; i < pairVec.size(); i++)
@@ -127,6 +161,8 @@ static std::vector<std::pair<unsigned int, unsigned int> >mergeSortVec(std::vect
 static std::vector<unsigned int>insertVec(std::vector<unsigned int> &main, std::vector<unsigned int> &pend,
  std::vector<unsigned int> &aux, std::vector<std::pair<unsigned int, unsigned int> > &pairVec, unsigned int n)
 {
+	(void) n;
+	
 	for (unsigned int i = 0; i < pairVec.size(); i++)
 		main.push_back(pairVec[i].first);
 	for (unsigned int i = 0; i < pairVec.size(); i++)
@@ -157,28 +193,7 @@ static std::vector<unsigned int>insertVec(std::vector<unsigned int> &main, std::
         }
     }
 	return (main);
-}
-
-void PmergeMe::sortVec()
-{	
-	size_t size = _n;
-	if (_odd)
-		size -=  1;
-	for (unsigned int i = 0; i < size - 1; i++)
-	{	
-		if (_auxVec[i] < _auxVec[i + 1])
-			std::swap(_auxVec[i], _auxVec[i + 1]);
-		_pairVec.push_back(std::make_pair(_auxVec[i], _auxVec[i + 1]));
-		_auxVec.erase(_auxVec.begin() + i);
-		size--;
-	}
-	if (!_odd)
-		_auxVec.erase(_auxVec.begin(), _auxVec.end());
-	else
-		_auxVec.erase(_auxVec.begin(), _auxVec.end() - 1);
-	_pairVec = mergeSortVec(_pairVec);
-	insertVec(_mainVec, _pendVec, _auxVec, _pairVec, _n);
-}
+} */
 
 void PmergeMe::printAux()
 {	
@@ -247,4 +262,9 @@ const char*PmergeMe::WrongArgumentsException::what(void) const throw()
 const char*PmergeMe::ArgumentErrorException::what(void) const throw()
 {
 	return ("Error found while parsing entered argument");
+};
+
+const char*PmergeMe::DuplicateErrorException::what(void) const throw()
+{
+	return ("Duplicate integers found");
 };
