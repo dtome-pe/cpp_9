@@ -69,6 +69,128 @@ PmergeMe::~PmergeMe()
 
 }
 
+static unsigned int generateJacob(unsigned int n)
+{
+	 if (n == 0)
+        return 0;
+
+    if (n == 1)
+        return 1;
+
+    return (generateJacob(n - 1) + 2 * generateJacob(n - 2));
+}
+
+static std::vector<unsigned int> buildJacob(unsigned int n)
+{
+	//std::cout << "n es: " << n << std::endl; 
+    std::vector<unsigned int>jacobSeq;
+    unsigned int jacob_index = 3;
+
+    while (generateJacob(jacob_index) < n -1)
+	{
+		jacobSeq.push_back(generateJacob(jacob_index));
+        jacob_index++;
+	}
+
+    return (jacobSeq);
+}
+
+static unsigned int	getFirst(std::vector<std::pair<unsigned int, unsigned int> > &pairVec, std::vector<unsigned int> &aux, unsigned int element)
+{	
+	unsigned int ret = 0;
+	for (unsigned int i = 0; i < pairVec.size(); i++)
+	{
+		if (element == pairVec[i].first)
+			ret = pairVec[i].second;
+	}
+	for (unsigned int i = 0; i < aux.size(); i++)
+	{
+		if (ret == aux[i])
+		{	
+			aux.erase(aux.begin() + i);
+			break ;
+		}
+	}
+	return (ret);
+}
+
+static size_t bisect(const std::vector<unsigned int>& main, unsigned int item, size_t left, size_t right) 
+{
+    while (left < right) 
+	{
+        size_t mid = left + (right - left) / 2;
+        if (main[mid] < item)
+            left = mid + 1;
+    	else 
+            right = mid;
+    }
+
+    return left;
+}
+
+static std::vector<unsigned int>insertVec(std::vector<unsigned int> &main, std::vector<unsigned int> &pend,
+ std::vector<unsigned int> &aux, std::vector<std::pair<unsigned int, unsigned int> > &pairVec, unsigned int n, bool _odd)
+{
+	(void) n;
+	
+	for (unsigned int i = 0; i < pairVec.size(); i++)
+		main.push_back(pairVec[i].first);
+	for (unsigned int i = 0; i < pairVec.size(); i++)
+		pend.push_back(pairVec[i].second);
+	if (aux.size())
+	{
+		pend.push_back(aux[0]);
+		aux.erase(aux.begin());
+	}
+	std::vector<unsigned int>::iterator it = main.begin();
+	main.insert(it, getFirst(pairVec, pend, main[0]));
+	std::vector<unsigned int>jacobSeq = buildJacob(pend.size());
+	
+	unsigned int				jacobIndex = 3;
+	std::string 				last = "default";
+	std::vector<unsigned int>	indexSeq;
+	indexSeq.push_back(1);
+	unsigned int				element;
+	unsigned int				iterator = 0;
+
+	for (unsigned int i = 0; i <= pend.size(); i++)
+	{
+		if (jacobSeq.size() != 0 && last != "jacob")
+		{
+			indexSeq.push_back(jacobSeq[0]);
+			element = pend[jacobSeq[0] - 1];
+			jacobSeq.erase(jacobSeq.begin());
+			last = "jacob";
+		}
+		else
+		{
+			for (size_t j = 0; j < indexSeq.size(); ++j) 
+			{
+				if (indexSeq[j] == iterator) 
+				{
+					iterator++;
+            		break;
+        		}
+    		}
+			element = pend[iterator - 1];
+			indexSeq.push_back(iterator);
+			last = "not-jacob";
+		}
+		size_t insertionPoint = bisect(main, element, 0, main.size());
+
+		main.insert(main.begin() + insertionPoint, element);
+
+		iterator++;
+		jacobIndex++;
+	}
+	if (_odd)
+	{
+		size_t insertion_point = bisect(main, pend[pend.size() - 1], 0, main.size());
+    	main.insert(main.begin() + insertion_point, pend[pend.size() - 1]);
+	}
+	return (main);
+}
+
 static std::vector<std::pair<unsigned int, unsigned int> > merge(std::vector<std::pair<unsigned int, unsigned int> >& left, std::vector<std::pair<unsigned int, unsigned int> >& right)
 {
 	std::vector<std::pair<unsigned int, unsigned int> > result;
@@ -133,67 +255,9 @@ void PmergeMe::sortVec()
 		_auxVec.erase(_auxVec.begin(), _auxVec.end());
 	else
 		_auxVec.erase(_auxVec.begin(), _auxVec.end() - 1);
-	//_pairVec = mergeSortVec(_pairVec);
-	//insertVec(_mainVec, _pendVec, _auxVec, _pairVec, _n);
+	_pairVec = mergeSortVec(_pairVec);
+	insertVec(_mainVec, _pendVec, _auxVec, _pairVec, _n, _odd);
 }
-
-/* 
-
-static unsigned int	getFirst(std::vector<std::pair<unsigned int, unsigned int> > &pairVec, std::vector<unsigned int> &aux, unsigned int element)
-{	
-	unsigned int ret = 0;
-	for (unsigned int i = 0; i < pairVec.size(); i++)
-	{
-		if (element == pairVec[i].first)
-			ret = pairVec[i].second;
-	}
-	for (unsigned int i = 0; i < aux.size(); i++)
-	{
-		if (ret == aux[i])
-		{	
-			aux.erase(aux.begin() + i);
-			break ;
-		}
-	}
-	return (ret);
-}
-
-static std::vector<unsigned int>insertVec(std::vector<unsigned int> &main, std::vector<unsigned int> &pend,
- std::vector<unsigned int> &aux, std::vector<std::pair<unsigned int, unsigned int> > &pairVec, unsigned int n)
-{
-	(void) n;
-	
-	for (unsigned int i = 0; i < pairVec.size(); i++)
-		main.push_back(pairVec[i].first);
-	for (unsigned int i = 0; i < pairVec.size(); i++)
-		pend.push_back(pairVec[i].second);
-	if (aux.size())
-	{
-		pend.push_back(aux[0]);
-		aux.erase(aux.begin());
-	}
-	std::vector<unsigned int>::iterator it = main.begin();
-	main.insert(it, getFirst(pairVec, pend, main[0]));
-	for (int k = 0 ; ; ++k)
-    {
-        uint64_t dist = jacobsthal_diff[k];
-        if (dist >= pend.size()) break;
-        std::vector<unsigned int>::iterator it = pend.begin();
-        std::advance(it, dist);
-
-        while (true)
-        {
-            std::vector<unsigned int>::iterator insertion = main.begin();
-			while ()
-            main.insert(insertion, *it);
-
-            it = pend.erase(it);
-            if (it == pend.begin()) break;
-            --it;
-        }
-    }
-	return (main);
-} */
 
 void PmergeMe::printAux()
 {	

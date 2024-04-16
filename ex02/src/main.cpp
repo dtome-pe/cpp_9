@@ -11,6 +11,7 @@ int main(int argc, char *argv[])
 		
 		//a.printAux();
 		a.sortVec();
+		
 		a.printAux();
 		a.printPend();
 		a.printMain();
