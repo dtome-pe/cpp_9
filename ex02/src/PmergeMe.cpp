@@ -95,7 +95,7 @@ static std::vector<unsigned int> buildJacob(unsigned int n)
     return (jacobSeq);
 }
 
-static unsigned int	getFirst(std::vector<std::pair<unsigned int, unsigned int> > &pairVec, std::vector<unsigned int> &aux, unsigned int element)
+static unsigned int	getFirstVec(std::vector<std::pair<unsigned int, unsigned int> > &pairVec, std::vector<unsigned int> &aux, unsigned int element)
 {	
 	unsigned int ret = 0;
 	for (unsigned int i = 0; i < pairVec.size(); i++)
@@ -114,7 +114,7 @@ static unsigned int	getFirst(std::vector<std::pair<unsigned int, unsigned int> >
 	return (ret);
 }
 
-static size_t bisect(const std::vector<unsigned int>& main, unsigned int item, size_t left, size_t right) 
+static size_t bisectVec(const std::vector<unsigned int>& main, unsigned int item, size_t left, size_t right) 
 {
     while (left < right) 
 	{
@@ -129,10 +129,8 @@ static size_t bisect(const std::vector<unsigned int>& main, unsigned int item, s
 }
 
 static std::vector<unsigned int>insertVec(std::vector<unsigned int> &main, std::vector<unsigned int> &pend,
- std::vector<unsigned int> &aux, std::vector<std::pair<unsigned int, unsigned int> > &pairVec, unsigned int n, bool _odd)
+ std::vector<unsigned int> &aux, std::vector<std::pair<unsigned int, unsigned int> > &pairVec, bool _odd)
 {
-	(void) n;
-
 	unsigned int straggler;
 
 	for (unsigned int i = 0; i < pairVec.size(); i++)
@@ -151,7 +149,7 @@ static std::vector<unsigned int>insertVec(std::vector<unsigned int> &main, std::
 	}
 	
 	std::vector<unsigned int>::iterator it = main.begin();
-	main.insert(it, getFirst(pairVec, pend, main[0]));
+	main.insert(it, getFirstVec(pairVec, pend, main[0]));
 	std::vector<unsigned int>jacobSeq = buildJacob(pend.size());
 	
 	unsigned int				jacobIndex = 3;
@@ -178,23 +176,20 @@ static std::vector<unsigned int>insertVec(std::vector<unsigned int> &main, std::
 			indexSeq.push_back(iterator);
 			last = "not-jacob";
 		}
-		size_t insertionPoint = bisect(main, element, 0, main.size());
-
-		std::cout << "element inserted: " << element << std::endl;
+		size_t insertionPoint = bisectVec(main, element, 0, main.size());
 		main.insert(main.begin() + insertionPoint, element);
-
 		iterator++;
 		jacobIndex++;
 	}
 	if (_odd)
 	{
-		size_t insertion_point = bisect(main, straggler, 0, main.size());
+		size_t insertion_point = bisectVec(main, straggler, 0, main.size());
     	main.insert(main.begin() + insertion_point, straggler);
 	}
 	return (main);
 }
 
-static std::vector<std::pair<unsigned int, unsigned int> > merge(std::vector<std::pair<unsigned int, unsigned int> >& left, std::vector<std::pair<unsigned int, unsigned int> >& right)
+static std::vector<std::pair<unsigned int, unsigned int> > mergeVec(std::vector<std::pair<unsigned int, unsigned int> >& left, std::vector<std::pair<unsigned int, unsigned int> >& right)
 {
 	std::vector<std::pair<unsigned int, unsigned int> > result;
 
@@ -238,7 +233,7 @@ static std::vector<std::pair<unsigned int, unsigned int> >mergeSortVec(std::vect
 	left = mergeSortVec(left);
     right = mergeSortVec(right);
 
-	return (merge(left, right));
+	return (mergeVec(left, right));
 }
 
 void PmergeMe::sortVec()
@@ -259,7 +254,171 @@ void PmergeMe::sortVec()
 	else
 		_auxVec.erase(_auxVec.begin(), _auxVec.end() - 1);
 	_pairVec = mergeSortVec(_pairVec);
-	insertVec(_mainVec, _pendVec, _auxVec, _pairVec, _n, _odd);
+	insertVec(_mainVec, _pendVec, _auxVec, _pairVec, _odd);
+}
+
+static size_t bisectDeque(const std::deque<unsigned int>& main, unsigned int item, size_t left, size_t right) 
+{
+    while (left < right) 
+	{
+        size_t mid = left + (right - left) / 2;
+        if (main[mid] < item)
+            left = mid + 1;
+    	else 
+            right = mid;
+    }
+
+    return left;
+}
+
+static unsigned int	getFirstDeque(std::deque<std::pair<unsigned int, unsigned int> > &pairVec, std::deque<unsigned int> &aux, unsigned int element)
+{	
+	unsigned int ret = 0;
+	for (unsigned int i = 0; i < pairVec.size(); i++)
+	{
+		if (element == pairVec[i].first)
+			ret = pairVec[i].second;
+	}
+	for (unsigned int i = 0; i < aux.size(); i++)
+	{
+		if (ret == aux[i])
+		{	
+			aux.erase(aux.begin() + i);
+			break ;
+		}
+	}
+	return (ret);
+}
+
+static std::deque<unsigned int>insertDeque(std::deque<unsigned int> &main, std::deque<unsigned int> &pend,
+ std::deque<unsigned int> &aux, std::deque<std::pair<unsigned int, unsigned int> > &pairVec, bool _odd)
+{
+	unsigned int straggler;
+
+	for (unsigned int i = 0; i < pairVec.size(); i++)
+		main.push_back(pairVec[i].first);
+	for (unsigned int i = 0; i < pairVec.size(); i++)
+		pend.push_back(pairVec[i].second);
+	if (aux.size())
+	{
+		pend.push_back(aux[0]);
+		aux.erase(aux.begin());
+	}
+	if (_odd)
+	{
+		straggler = pend[pend.size() - 1];
+		pend.erase(pend.end() - 1);
+	}
+	
+	std::deque<unsigned int>::iterator it = main.begin();
+	main.insert(it, getFirstDeque(pairVec, pend, main[0]));
+	std::vector<unsigned int>jacobSeq = buildJacob(pend.size());
+	
+	unsigned int				jacobIndex = 3;
+	std::string 				last = "default";
+	std::vector<unsigned int>	indexSeq(1);
+	unsigned int				element;
+	unsigned int				iterator = 0;
+
+	while (iterator <= pend.size())
+	{
+		if (jacobSeq.size() != 0 && last != "jacob")
+		{
+			indexSeq.push_back(jacobSeq[0]);
+			element = pend[jacobSeq[0] - 1];
+			jacobSeq.erase(jacobSeq.begin());
+			last = "jacob";
+			
+		}
+		else
+		{
+			if (std::find(indexSeq.begin(), indexSeq.end(), iterator) != indexSeq.end())
+				iterator++;
+			element = pend[iterator - 1];
+			indexSeq.push_back(iterator);
+			last = "not-jacob";
+		}
+
+		size_t insertionPoint = bisectDeque(main, element, 0, main.size());
+		main.insert(main.begin() + insertionPoint, element);
+
+		iterator++;
+		jacobIndex++;
+	}
+	if (_odd)
+	{
+		size_t insertion_point = bisectDeque(main, straggler, 0, main.size());
+    	main.insert(main.begin() + insertion_point, straggler);
+	}
+	return (main);
+}
+
+static std::deque<std::pair<unsigned int, unsigned int> > mergeDeque(std::deque<std::pair<unsigned int, unsigned int> >& left, std::deque<std::pair<unsigned int, unsigned int> >& right)
+{
+	std::deque<std::pair<unsigned int, unsigned int> > result;
+
+	while (!left.empty() && !right.empty())
+	{
+        if (left.front().first <= right.front().first)
+		{
+            result.push_back(left.front());
+            left.erase(left.begin());
+        }
+		else
+		{
+            result.push_back(right.front());
+            right.erase(right.begin());
+        }
+    }
+
+	while (!left.empty())
+	{
+        result.push_back(left.front());
+        left.erase(left.begin());
+    }
+    while (!right.empty())
+	{
+        result.push_back(right.front());
+        right.erase(right.begin());
+    }
+    return result;
+}
+
+static std::deque<std::pair<unsigned int, unsigned int> >mergeSortDeque(std::deque<std::pair<unsigned int, unsigned int> >&deque)
+{
+	if (deque.size() <= 1)
+	{
+		return deque;
+	}
+	int mid = deque.size() / 2;
+	std::deque<std::pair<unsigned int, unsigned int> >left(deque.begin(), deque.begin() + mid);
+    std::deque<std::pair<unsigned int, unsigned int> >right(deque.begin() + mid, deque.end());
+
+	left = mergeSortDeque(left);
+    right = mergeSortDeque(right);
+
+	return (mergeDeque(left, right));
+}
+
+void PmergeMe::sortDeque()
+{	
+	size_t size = _n;
+	if (_odd)
+		size -=  1;
+	for (unsigned int i = 0; i < size - 1; i++)
+	{	
+		if (_auxDeque[i] < _auxDeque[i + 1])
+			std::swap(_auxDeque[i], _auxDeque[i + 1]);
+		_pairDeque.push_back(std::make_pair(_auxDeque[i], _auxDeque[i + 1]));
+		_auxDeque.erase(_auxDeque.begin() + i);
+		size--;
+	}
+	if (!_odd)
+		_auxDeque.erase(_auxDeque.begin(), _auxDeque.end());
+	else
+		_auxDeque.erase(_auxDeque.begin(), _auxDeque.end() - 1);
+	_pairDeque = mergeSortDeque(_pairDeque);
+	insertDeque(_mainDeque, _pendDeque, _auxDeque, _pairDeque, _odd);
 }
 
 void PmergeMe::printAux()
@@ -270,11 +429,11 @@ void PmergeMe::printAux()
     }
     std::cout << std::endl;
 
-/* 	std::cout << "_auxDeque: ";
+	std::cout << "_auxDeque: ";
 	for(std::deque<unsigned int>::iterator it = _auxDeque.begin(); it != _auxDeque.end() ; ++it){
         std::cout << *it << " ";
     }
-    std::cout << std::endl; */
+    std::cout << std::endl;
 }
 
 void PmergeMe::printPend()
@@ -285,11 +444,11 @@ void PmergeMe::printPend()
     }
     std::cout << std::endl;
 
-/* 	std::cout << "_auxDeque: ";
+	std::cout << "_auxDeque: ";
 	for(std::deque<unsigned int>::iterator it = _auxDeque.begin(); it != _auxDeque.end() ; ++it){
         std::cout << *it << " ";
     }
-    std::cout << std::endl; */
+    std::cout << std::endl;
 }
 
 void PmergeMe::printMain()
@@ -300,11 +459,11 @@ void PmergeMe::printMain()
     }
     std::cout << std::endl;
 
-/* 	std::cout << "_sortedDeque: ";
-	for(std::deque<unsigned int>::iterator it = _sortedDeque.begin(); it != _sortedDeque.end() ; ++it){
+	std::cout << "_mainDeque: ";
+	for(std::deque<unsigned int>::iterator it = _mainDeque.begin(); it != _mainDeque.end() ; ++it){
         std::cout << *it << " ";
     }
-    std::cout << std::endl; */
+    std::cout << std::endl;
 }
 
 void PmergeMe::printPairs()
@@ -314,11 +473,11 @@ void PmergeMe::printPairs()
         std::cout << it->first << ":" << it->second << std::endl;
     }
 
-/* 	std::cout << "_sortedDeque: ";
-	for(std::deque<unsigned int>::iterator it = _sortedDeque.begin(); it != _sortedDeque.end() ; ++it){
-        std::cout << *it << " ";
+	std::cout << "_pairDeque: ";
+	for(std::deque<std::pair<unsigned int, unsigned int> >::iterator it = _pairDeque.begin(); it != _pairDeque.end() ; ++it){
+        std::cout << it->first << ":" << it->second << std::endl;
     }
-    std::cout << std::endl; */
+    std::cout << std::endl;
 }
 
 const char*PmergeMe::WrongArgumentsException::what(void) const throw()

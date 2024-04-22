@@ -15,7 +15,9 @@ class PmergeMe
 		std::vector<unsigned int>							_mainVec;
 
 		std::deque<unsigned int>							_auxDeque;
-		std::deque<unsigned int>							_sortedDeque;
+		std::deque<unsigned int>							_pendDeque;
+		std::deque<std::pair<unsigned int, unsigned int> >	_pairDeque;
+		std::deque<unsigned int>							_mainDeque;
 
 		size_t												_n;
 		bool												_odd;
@@ -27,6 +29,8 @@ class PmergeMe
 
 		/*vector*/
 		void	sortVec();
+
+		void	sortDeque();
 
 		void	printAux();
 		void	printPend();

@@ -11,11 +11,14 @@ int main(int argc, char *argv[])
 		
 		//a.printAux();
 		a.sortVec();
+		a.sortDeque();
 		
-		a.printAux();
-		a.printPend();
+		//a.printAux();
+	//	a.printPend();
 		a.printMain();
-		a.printPairs();
+		//a.printPairs();
+
+
 		//a.printAux();
     } 
 	catch (std::exception &e) 
