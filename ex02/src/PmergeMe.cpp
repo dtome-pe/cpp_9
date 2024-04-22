@@ -132,7 +132,9 @@ static std::vector<unsigned int>insertVec(std::vector<unsigned int> &main, std::
  std::vector<unsigned int> &aux, std::vector<std::pair<unsigned int, unsigned int> > &pairVec, unsigned int n, bool _odd)
 {
 	(void) n;
-	
+
+	unsigned int straggler;
+
 	for (unsigned int i = 0; i < pairVec.size(); i++)
 		main.push_back(pairVec[i].first);
 	for (unsigned int i = 0; i < pairVec.size(); i++)
@@ -142,18 +144,23 @@ static std::vector<unsigned int>insertVec(std::vector<unsigned int> &main, std::
 		pend.push_back(aux[0]);
 		aux.erase(aux.begin());
 	}
+	if (_odd)
+	{
+		straggler = pend[pend.size() - 1];
+		pend.erase(pend.end() - 1);
+	}
+	
 	std::vector<unsigned int>::iterator it = main.begin();
 	main.insert(it, getFirst(pairVec, pend, main[0]));
 	std::vector<unsigned int>jacobSeq = buildJacob(pend.size());
 	
 	unsigned int				jacobIndex = 3;
 	std::string 				last = "default";
-	std::vector<unsigned int>	indexSeq;
-	indexSeq.push_back(1);
+	std::vector<unsigned int>	indexSeq(1);
 	unsigned int				element;
 	unsigned int				iterator = 0;
 
-	for (unsigned int i = 0; i <= pend.size(); i++)
+	while (iterator <= pend.size())
 	{
 		if (jacobSeq.size() != 0 && last != "jacob")
 		{
@@ -161,23 +168,19 @@ static std::vector<unsigned int>insertVec(std::vector<unsigned int> &main, std::
 			element = pend[jacobSeq[0] - 1];
 			jacobSeq.erase(jacobSeq.begin());
 			last = "jacob";
+			
 		}
 		else
 		{
-			for (size_t j = 0; j < indexSeq.size(); ++j) 
-			{
-				if (indexSeq[j] == iterator) 
-				{
-					iterator++;
-            		break;
-        		}
-    		}
+			if (std::find(indexSeq.begin(), indexSeq.end(), iterator) != indexSeq.end())
+				iterator++;
 			element = pend[iterator - 1];
 			indexSeq.push_back(iterator);
 			last = "not-jacob";
 		}
 		size_t insertionPoint = bisect(main, element, 0, main.size());
 
+		std::cout << "element inserted: " << element << std::endl;
 		main.insert(main.begin() + insertionPoint, element);
 
 		iterator++;
@@ -185,8 +188,8 @@ static std::vector<unsigned int>insertVec(std::vector<unsigned int> &main, std::
 	}
 	if (_odd)
 	{
-		size_t insertion_point = bisect(main, pend[pend.size() - 1], 0, main.size());
-    	main.insert(main.begin() + insertion_point, pend[pend.size() - 1]);
+		size_t insertion_point = bisect(main, straggler, 0, main.size());
+    	main.insert(main.begin() + insertion_point, straggler);
 	}
 	return (main);
 }
