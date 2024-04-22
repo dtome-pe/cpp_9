@@ -5,6 +5,8 @@
 # include <deque>
 # include <string>
 # include <iostream>
+# include <ctime>
+# include <iomanip>
 
 class PmergeMe
 {
@@ -21,6 +23,7 @@ class PmergeMe
 
 		size_t												_n;
 		bool												_odd;
+
 	public:
 		PmergeMe(std::string argv);
 		PmergeMe(PmergeMe &copy);

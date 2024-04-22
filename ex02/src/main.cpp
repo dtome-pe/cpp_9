@@ -8,18 +8,15 @@ int main(int argc, char *argv[])
        		throw PmergeMe::WrongArgumentsException();
 		
 		PmergeMe a(argv[1]);
-		
+
+		//std::cout << "Before: ";
 		//a.printAux();
+
 		a.sortVec();
 		a.sortDeque();
 		
-		//a.printAux();
-	//	a.printPend();
+		std::cout << "After: ";
 		a.printMain();
-		//a.printPairs();
-
-
-		//a.printAux();
     } 
 	catch (std::exception &e) 
 	{

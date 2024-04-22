@@ -238,11 +238,14 @@ static std::vector<std::pair<unsigned int, unsigned int> >mergeSortVec(std::vect
 
 void PmergeMe::sortVec()
 {	
+/* 	clock_t start = clock();
+	std::cout << static_cast<double>(start / CLOCKS_PER_SEC) << std::endl; */
 	size_t size = _n;
 	if (_odd)
 		size -=  1;
 	for (unsigned int i = 0; i < size - 1; i++)
 	{	
+		std::cout << "i: " << i << std::endl;
 		if (_auxVec[i] < _auxVec[i + 1])
 			std::swap(_auxVec[i], _auxVec[i + 1]);
 		_pairVec.push_back(std::make_pair(_auxVec[i], _auxVec[i + 1]));
@@ -255,6 +258,10 @@ void PmergeMe::sortVec()
 		_auxVec.erase(_auxVec.begin(), _auxVec.end() - 1);
 	_pairVec = mergeSortVec(_pairVec);
 	insertVec(_mainVec, _pendVec, _auxVec, _pairVec, _odd);
+/* 	clock_t end = clock();
+	std::cout << static_cast<double>(end / CLOCKS_PER_SEC) << std::endl;
+	double	time = static_cast<double>(end - start) / static_cast<double>(CLOCKS_PER_SEC);
+	std::cout << "Time to process a range of " << _n << " elements with std::vector: " << time << std::setprecision(5) << "µs." << std::endl; */
 }
 
 static size_t bisectDeque(const std::deque<unsigned int>& main, unsigned int item, size_t left, size_t right) 
@@ -401,7 +408,7 @@ static std::deque<std::pair<unsigned int, unsigned int> >mergeSortDeque(std::deq
 }
 
 void PmergeMe::sortDeque()
-{	
+{
 	size_t size = _n;
 	if (_odd)
 		size -=  1;
@@ -419,18 +426,12 @@ void PmergeMe::sortDeque()
 		_auxDeque.erase(_auxDeque.begin(), _auxDeque.end() - 1);
 	_pairDeque = mergeSortDeque(_pairDeque);
 	insertDeque(_mainDeque, _pendDeque, _auxDeque, _pairDeque, _odd);
+
 }
 
 void PmergeMe::printAux()
-{	
-	std::cout << "_auxVec: ";
+{
     for(std::vector<unsigned int>::iterator it = _auxVec.begin(); it != _auxVec.end() ; ++it){
-        std::cout << *it << " ";
-    }
-    std::cout << std::endl;
-
-	std::cout << "_auxDeque: ";
-	for(std::deque<unsigned int>::iterator it = _auxDeque.begin(); it != _auxDeque.end() ; ++it){
         std::cout << *it << " ";
     }
     std::cout << std::endl;
@@ -452,15 +453,8 @@ void PmergeMe::printPend()
 }
 
 void PmergeMe::printMain()
-{	
-	std::cout << "_mainVec: ";
+{
     for(std::vector<unsigned int>::iterator it = _mainVec.begin(); it != _mainVec.end() ; ++it){
-        std::cout << *it << " ";
-    }
-    std::cout << std::endl;
-
-	std::cout << "_mainDeque: ";
-	for(std::deque<unsigned int>::iterator it = _mainDeque.begin(); it != _mainDeque.end() ; ++it){
         std::cout << *it << " ";
     }
     std::cout << std::endl;
