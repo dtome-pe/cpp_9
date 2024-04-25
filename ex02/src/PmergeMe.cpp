@@ -1,5 +1,4 @@
 #include "../inc/PmergeMe.hpp"
-#include <sstream>
 #include <limits>
 #include <algorithm>
 #include <utility>
@@ -30,7 +29,7 @@ PmergeMe::PmergeMe(char *argv[])
 		number >> x;
 		_beforeVec.push_back(x);
 	}
-	if (_beforeVec.size() > 10000)
+	if (_beforeVec.size() > 3000)
 		throw PmergeMe::TooManyNumbersException();
 	_n = _beforeVec.size();
 	if (_n % 2 != 0)
@@ -98,10 +97,8 @@ static unsigned int generateJacob(unsigned int n)
 {
 	 if (n == 0)
         return 0;
-
     if (n == 1)
         return 1;
-
     return (generateJacob(n - 1) + 2 * generateJacob(n - 2));
 }
 
@@ -109,17 +106,15 @@ static std::vector<unsigned int> buildJacob(unsigned int n)
 {
     std::vector<unsigned int>jacobSeq;
     unsigned int jacob_index = 3;
-
     while (generateJacob(jacob_index) < n -1)
 	{
 		jacobSeq.push_back(generateJacob(jacob_index));
         jacob_index++;
 	}
-
     return (jacobSeq);
 }
 
-static unsigned int	getFirstVec(std::vector<std::pair<unsigned int, unsigned int> > &pairVec, std::vector<unsigned int> &aux, unsigned int element)
+static unsigned int	getFirstVec(std::vector<std::pair<unsigned int, unsigned int> > &pairVec, std::vector<unsigned int> &pend, unsigned int element)
 {	
 	unsigned int ret = 0;
 	for (unsigned int i = 0; i < pairVec.size(); i++)
@@ -127,11 +122,11 @@ static unsigned int	getFirstVec(std::vector<std::pair<unsigned int, unsigned int
 		if (element == pairVec[i].first)
 			ret = pairVec[i].second;
 	}
-	for (unsigned int i = 0; i < aux.size(); i++)
+	for (unsigned int i = 0; i < pend.size(); i++)
 	{
-		if (ret == aux[i])
+		if (ret == pend[i])
 		{	
-			aux.erase(aux.begin() + i);
+			pend.erase(pend.begin() + i);
 			break ;
 		}
 	}
@@ -153,24 +148,12 @@ static size_t bisectVec(const std::vector<unsigned int>& main, unsigned int item
 }
 
 static std::vector<unsigned int>insertVec(std::vector<unsigned int> &main, std::vector<unsigned int> &pend,
- std::vector<unsigned int> &aux, std::vector<std::pair<unsigned int, unsigned int> > &pairVec, bool _odd)
+ unsigned int straggler, std::vector<std::pair<unsigned int, unsigned int> > &pairVec, bool _odd)
 {
-	unsigned int straggler;
-
 	for (unsigned int i = 0; i < pairVec.size(); i++)
 		main.push_back(pairVec[i].first);
 	for (unsigned int i = 0; i < pairVec.size(); i++)
 		pend.push_back(pairVec[i].second);
-	if (aux.size())
-	{
-		pend.push_back(aux[0]);
-		aux.erase(aux.begin());
-	}
-	if (_odd)
-	{
-		straggler = pend[pend.size() - 1];
-		pend.erase(pend.end() - 1);
-	}
 	
 	std::vector<unsigned int>::iterator it = main.begin();
 	main.insert(it, getFirstVec(pairVec, pend, main[0]));
@@ -263,22 +246,15 @@ static std::vector<std::pair<unsigned int, unsigned int> >mergeSortVec(std::vect
 void PmergeMe::sortVec(char *argv[])
 {	
 	clock_t start = clock();
-	for (unsigned int i = 1; argv[i]; i++)
-	{
-		std::string str(argv[i]);
-		unsigned int x = 0;
-		std::stringstream number(str);
-		number >> x;
-		_auxVec.push_back(x);
-	}
+	addToContainer(_auxVec, argv);
 	size_t size = _auxVec.size();
 	if (size == 1)
-	{
-		_mainVec.push_back(_auxVec[0]);
-		return;
-	}
+		return (_mainVec.push_back(_auxVec[0]));
 	if (_odd)
+	{
 		size -=  1;
+		_straggler = _auxVec[_auxVec.size() - 1];
+	}
 	for (unsigned int i = 0; i < size - 1; i++)
 	{
 		if (_auxVec[i] < _auxVec[i + 1])
@@ -286,10 +262,8 @@ void PmergeMe::sortVec(char *argv[])
 		_pairVec.push_back(std::make_pair(_auxVec[i], _auxVec[i + 1]));
 		size--;
 	}
-	if (_odd)
-		_straggler = _auxVec[_auxVec.size() - 1];
 	_pairVec = mergeSortVec(_pairVec);
-	insertVec(_mainVec, _pendVec, _auxVec, _pairVec, _odd);
+	insertVec(_mainVec, _pendVec, _straggler, _pairVec, _odd);
 	clock_t end = clock();
 	_timeVec = static_cast<double>(end - start) / static_cast<double>(CLOCKS_PER_SEC);
 }
@@ -308,7 +282,7 @@ static size_t bisectDeque(const std::deque<unsigned int>& main, unsigned int ite
     return left;
 }
 
-static unsigned int	getFirstDeque(std::deque<std::pair<unsigned int, unsigned int> > &pairVec, std::deque<unsigned int> &aux, unsigned int element)
+static unsigned int	getFirstDeque(std::deque<std::pair<unsigned int, unsigned int> > &pairVec, std::deque<unsigned int> &pend, unsigned int element)
 {	
 	unsigned int ret = 0;
 	for (unsigned int i = 0; i < pairVec.size(); i++)
@@ -316,11 +290,11 @@ static unsigned int	getFirstDeque(std::deque<std::pair<unsigned int, unsigned in
 		if (element == pairVec[i].first)
 			ret = pairVec[i].second;
 	}
-	for (unsigned int i = 0; i < aux.size(); i++)
+	for (unsigned int i = 0; i < pend.size(); i++)
 	{
-		if (ret == aux[i])
+		if (ret == pend[i])
 		{	
-			aux.erase(aux.begin() + i);
+			pend.erase(pend.begin() + i);
 			break ;
 		}
 	}
@@ -328,29 +302,17 @@ static unsigned int	getFirstDeque(std::deque<std::pair<unsigned int, unsigned in
 }
 
 static std::deque<unsigned int>insertDeque(std::deque<unsigned int> &main, std::deque<unsigned int> &pend,
- std::deque<unsigned int> &aux, std::deque<std::pair<unsigned int, unsigned int> > &pairVec, bool _odd)
+ unsigned int straggler, std::deque<std::pair<unsigned int, unsigned int> > &pairVec, bool _odd)
 {
-	unsigned int straggler;
-
 	for (unsigned int i = 0; i < pairVec.size(); i++)
 		main.push_back(pairVec[i].first);
 	for (unsigned int i = 0; i < pairVec.size(); i++)
 		pend.push_back(pairVec[i].second);
-	if (aux.size())
-	{
-		pend.push_back(aux[0]);
-		aux.erase(aux.begin());
-	}
-	if (_odd)
-	{
-		straggler = pend[pend.size() - 1];
-		pend.erase(pend.end() - 1);
-	}
 	
 	std::deque<unsigned int>::iterator it = main.begin();
 	main.insert(it, getFirstDeque(pairVec, pend, main[0]));
 	std::vector<unsigned int>jacobSeq = buildJacob(pend.size());
-	
+
 	unsigned int				jacobIndex = 3;
 	std::string 				last = "default";
 	std::vector<unsigned int>	indexSeq(1);
@@ -424,9 +386,7 @@ static std::deque<std::pair<unsigned int, unsigned int> > mergeDeque(std::deque<
 static std::deque<std::pair<unsigned int, unsigned int> >mergeSortDeque(std::deque<std::pair<unsigned int, unsigned int> >&deque)
 {
 	if (deque.size() <= 1)
-	{
 		return deque;
-	}
 	int mid = deque.size() / 2;
 	std::deque<std::pair<unsigned int, unsigned int> >left(deque.begin(), deque.begin() + mid);
     std::deque<std::pair<unsigned int, unsigned int> >right(deque.begin() + mid, deque.end());
@@ -440,44 +400,26 @@ static std::deque<std::pair<unsigned int, unsigned int> >mergeSortDeque(std::deq
 void PmergeMe::sortDeque(char *argv[])
 {	
 	clock_t start = clock();
-	for (unsigned int i = 1; argv[i]; i++)
-	{
-		std::string str(argv[i]);
-		unsigned int x = 0;
-		std::stringstream number(str);
-		number >> x;
-		_auxDeque.push_back(x);
-	}
+	addToContainer(_auxDeque, argv);
 	size_t size = _n;
 	if (size == 1)
 		return (_mainDeque.push_back(_auxDeque[0]));
 	if (_odd)
+	{
 		size -=  1;
+		_straggler = _auxDeque[_auxDeque.size() - 1];
+	}
 	for (unsigned int i = 0; i < size - 1; i++)
 	{	
 		if (_auxDeque[i] < _auxDeque[i + 1])
 			std::swap(_auxDeque[i], _auxDeque[i + 1]);
 		_pairDeque.push_back(std::make_pair(_auxDeque[i], _auxDeque[i + 1]));
-		_auxDeque.erase(_auxDeque.begin() + i);
 		size--;
 	}
-	if (!_odd)
-		_auxDeque.erase(_auxDeque.begin(), _auxDeque.end());
-	else
-		_auxDeque.erase(_auxDeque.begin(), _auxDeque.end() - 1);
 	_pairDeque = mergeSortDeque(_pairDeque);
-	insertDeque(_mainDeque, _pendDeque, _auxDeque, _pairDeque, _odd);
+	insertDeque(_mainDeque, _pendDeque, _straggler, _pairDeque, _odd);
 	clock_t end = clock();
 	_timeDeque = static_cast<double>(end - start) / static_cast<double>(CLOCKS_PER_SEC);
-}
-
-void PmergeMe::printBefore()
-{
-    for(std::vector<unsigned int>::iterator it = _beforeVec.begin(); it != _beforeVec.end() ; ++it){
-        std::cout << *it << " ";
-    }
-    std::cout << std::endl;
-
 }
 
 unsigned int	PmergeMe::getNumbers()

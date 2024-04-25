@@ -8,6 +8,7 @@
 # include <ctime>
 # include <iomanip>
 # include <sys/time.h>
+# include <sstream>
 
 
 class PmergeMe
@@ -31,7 +32,6 @@ class PmergeMe
 
 		double												_timeVec;
 		double												_timeDeque;
-
 		unsigned int										_straggler;
 
 	public:
@@ -41,11 +41,9 @@ class PmergeMe
 		~PmergeMe();
 
 		void			run(char *argv[]);
+		
 		void			sortVec(char *argv[]);
-
 		void			sortDeque(char *argv[]);
-
-		void			printBefore();
 
 		template <typename Container> void print(const Container& cont)
 		{
@@ -57,6 +55,18 @@ class PmergeMe
 			}
 			std::cout << "]";
 			std::cout << std::endl;
+		}
+
+		template <typename Container> void addToContainer(Container& cont, char *argv[])
+		{
+			for (unsigned int i = 1; argv[i]; i++)
+			{
+				std::string str(argv[i]);
+				unsigned int x = 0;
+				std::stringstream number(str);
+				number >> x;
+				cont.push_back(x);
+			}
 		}
 
 		unsigned int	getNumbers();
