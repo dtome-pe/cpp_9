@@ -17,56 +17,81 @@ static bool isInt(const std::string &str)
 		return (true);
 }
 
-PmergeMe::PmergeMe(std::string argv)
+PmergeMe::PmergeMe(char *argv[])
 {
-	std::stringstream ss(argv);
-	std::string str;
 
-	ss >> std::ws;
-	while (getline(ss, str, ' '))
+	for (unsigned int i = 1; argv[i]; i++)
 	{
+		std::string str(argv[i]);
 		if (!isInt(str))
 			throw PmergeMe::ArgumentErrorException();
 		unsigned int x = 0;
 		std::stringstream number(str);
 		number >> x;
-		_auxVec.push_back(x);
-		_auxDeque.push_back(x);
-		ss >> std::ws;
+		_beforeVec.push_back(x);
 	}
-	std::vector<unsigned int> uniqueCheck;
-    for (unsigned int i = 0; i < _auxVec.size(); i++) 
-	{
-        for (unsigned int j = 0; j < uniqueCheck.size(); j++)
-		{
-			if (_auxVec[i] == uniqueCheck[j])
-				throw PmergeMe::DuplicateErrorException();
-		}
-		uniqueCheck.push_back(_auxVec[i]);
-    }
-
-	_n = _auxVec.size();
+	if (_beforeVec.size() > 10000)
+		throw PmergeMe::TooManyNumbersException();
+	_n = _beforeVec.size();
 	if (_n % 2 != 0)
 		_odd = true;
 	else
 		_odd = false;
-
 }
 
 PmergeMe::PmergeMe(PmergeMe &copy)
-{	
-	(void) copy;
+{
+		_beforeVec = copy._beforeVec;
+		_auxVec = copy._auxVec;
+		_pendVec = copy._pendVec;
+		_pairVec = copy._pairVec;
+		_mainVec = copy._mainVec;
+		_auxDeque = copy._auxDeque;
+		_pendDeque = copy._pendDeque;
+		_pairDeque = copy._pairDeque;
+		_mainDeque = copy._mainDeque;
+		_n = copy._n;
+		_odd = copy._odd;
+		_timeVec = copy._timeVec;
+		_timeDeque = copy._timeDeque;
 }
 
 PmergeMe& PmergeMe::operator=(const PmergeMe &instance)
 {
-	(void) instance;
-	return (*this);
+		_beforeVec = instance._beforeVec;
+		_auxVec = instance._auxVec;
+		_pendVec = instance._pendVec;
+		_pairVec = instance._pairVec;
+		_mainVec = instance._mainVec;
+		_auxDeque = instance._auxDeque;
+		_pendDeque = instance._pendDeque;
+		_pairDeque = instance._pairDeque;
+		_mainDeque = instance._mainDeque;
+		_n = instance._n;
+		_odd = instance._odd;
+		_timeVec = instance._timeVec;
+		_timeDeque = instance._timeDeque;
+		return (*this);
 }
 
 PmergeMe::~PmergeMe()
 {
 
+}
+
+void	PmergeMe::run(char *argv[])
+{
+	std::cout << "Before: ";
+	print(_beforeVec);
+
+	sortVec(argv);
+	sortDeque(argv);
+		
+	std::cout << "After: ";
+	print(_mainVec);
+
+	std::cout << "Time to process a range of " << getNumbers() << " elements with std::vec: " << std::fixed << getTimeVec() << "us." << std::endl;
+	std::cout << "Time to process a range of " << getNumbers() << " elements with std::deq: " << std::fixed << getTimeDeque() << "us." << std::endl;	
 }
 
 static unsigned int generateJacob(unsigned int n)
@@ -82,7 +107,6 @@ static unsigned int generateJacob(unsigned int n)
 
 static std::vector<unsigned int> buildJacob(unsigned int n)
 {
-	//std::cout << "n es: " << n << std::endl; 
     std::vector<unsigned int>jacobSeq;
     unsigned int jacob_index = 3;
 
@@ -236,32 +260,38 @@ static std::vector<std::pair<unsigned int, unsigned int> >mergeSortVec(std::vect
 	return (mergeVec(left, right));
 }
 
-void PmergeMe::sortVec()
+void PmergeMe::sortVec(char *argv[])
 {	
-/* 	clock_t start = clock();
-	std::cout << static_cast<double>(start / CLOCKS_PER_SEC) << std::endl; */
-	size_t size = _n;
+	clock_t start = clock();
+	for (unsigned int i = 1; argv[i]; i++)
+	{
+		std::string str(argv[i]);
+		unsigned int x = 0;
+		std::stringstream number(str);
+		number >> x;
+		_auxVec.push_back(x);
+	}
+	size_t size = _auxVec.size();
+	if (size == 1)
+	{
+		_mainVec.push_back(_auxVec[0]);
+		return;
+	}
 	if (_odd)
 		size -=  1;
 	for (unsigned int i = 0; i < size - 1; i++)
-	{	
-		std::cout << "i: " << i << std::endl;
+	{
 		if (_auxVec[i] < _auxVec[i + 1])
 			std::swap(_auxVec[i], _auxVec[i + 1]);
 		_pairVec.push_back(std::make_pair(_auxVec[i], _auxVec[i + 1]));
-		_auxVec.erase(_auxVec.begin() + i);
 		size--;
 	}
-	if (!_odd)
-		_auxVec.erase(_auxVec.begin(), _auxVec.end());
-	else
-		_auxVec.erase(_auxVec.begin(), _auxVec.end() - 1);
+	if (_odd)
+		_straggler = _auxVec[_auxVec.size() - 1];
 	_pairVec = mergeSortVec(_pairVec);
 	insertVec(_mainVec, _pendVec, _auxVec, _pairVec, _odd);
-/* 	clock_t end = clock();
-	std::cout << static_cast<double>(end / CLOCKS_PER_SEC) << std::endl;
-	double	time = static_cast<double>(end - start) / static_cast<double>(CLOCKS_PER_SEC);
-	std::cout << "Time to process a range of " << _n << " elements with std::vector: " << time << std::setprecision(5) << "µs." << std::endl; */
+	clock_t end = clock();
+	_timeVec = static_cast<double>(end - start) / static_cast<double>(CLOCKS_PER_SEC);
 }
 
 static size_t bisectDeque(const std::deque<unsigned int>& main, unsigned int item, size_t left, size_t right) 
@@ -407,9 +437,20 @@ static std::deque<std::pair<unsigned int, unsigned int> >mergeSortDeque(std::deq
 	return (mergeDeque(left, right));
 }
 
-void PmergeMe::sortDeque()
-{
+void PmergeMe::sortDeque(char *argv[])
+{	
+	clock_t start = clock();
+	for (unsigned int i = 1; argv[i]; i++)
+	{
+		std::string str(argv[i]);
+		unsigned int x = 0;
+		std::stringstream number(str);
+		number >> x;
+		_auxDeque.push_back(x);
+	}
 	size_t size = _n;
+	if (size == 1)
+		return (_mainDeque.push_back(_auxDeque[0]));
 	if (_odd)
 		size -=  1;
 	for (unsigned int i = 0; i < size - 1; i++)
@@ -426,52 +467,32 @@ void PmergeMe::sortDeque()
 		_auxDeque.erase(_auxDeque.begin(), _auxDeque.end() - 1);
 	_pairDeque = mergeSortDeque(_pairDeque);
 	insertDeque(_mainDeque, _pendDeque, _auxDeque, _pairDeque, _odd);
-
+	clock_t end = clock();
+	_timeDeque = static_cast<double>(end - start) / static_cast<double>(CLOCKS_PER_SEC);
 }
 
-void PmergeMe::printAux()
+void PmergeMe::printBefore()
 {
-    for(std::vector<unsigned int>::iterator it = _auxVec.begin(); it != _auxVec.end() ; ++it){
+    for(std::vector<unsigned int>::iterator it = _beforeVec.begin(); it != _beforeVec.end() ; ++it){
         std::cout << *it << " ";
     }
     std::cout << std::endl;
+
 }
 
-void PmergeMe::printPend()
-{	
-	std::cout << "_pendVec: ";
-    for(std::vector<unsigned int>::iterator it = _pendVec.begin(); it != _pendVec.end() ; ++it){
-        std::cout << *it << " ";
-    }
-    std::cout << std::endl;
-
-	std::cout << "_auxDeque: ";
-	for(std::deque<unsigned int>::iterator it = _auxDeque.begin(); it != _auxDeque.end() ; ++it){
-        std::cout << *it << " ";
-    }
-    std::cout << std::endl;
-}
-
-void PmergeMe::printMain()
+unsigned int	PmergeMe::getNumbers()
 {
-    for(std::vector<unsigned int>::iterator it = _mainVec.begin(); it != _mainVec.end() ; ++it){
-        std::cout << *it << " ";
-    }
-    std::cout << std::endl;
+	return (_n);
 }
 
-void PmergeMe::printPairs()
-{	
-	std::cout << "_pairVec: " << std::endl;
-    for(std::vector<std::pair<unsigned int, unsigned int> >::iterator it = _pairVec.begin(); it != _pairVec.end() ; ++it){
-        std::cout << it->first << ":" << it->second << std::endl;
-    }
+double			PmergeMe::getTimeVec()
+{
+	return (_timeVec);
+}
 
-	std::cout << "_pairDeque: ";
-	for(std::deque<std::pair<unsigned int, unsigned int> >::iterator it = _pairDeque.begin(); it != _pairDeque.end() ; ++it){
-        std::cout << it->first << ":" << it->second << std::endl;
-    }
-    std::cout << std::endl;
+double			PmergeMe::getTimeDeque()
+{
+	return (_timeDeque);
 }
 
 const char*PmergeMe::WrongArgumentsException::what(void) const throw()
@@ -487,4 +508,9 @@ const char*PmergeMe::ArgumentErrorException::what(void) const throw()
 const char*PmergeMe::DuplicateErrorException::what(void) const throw()
 {
 	return ("Duplicate integers found");
+};
+
+const char*PmergeMe::TooManyNumbersException::what(void) const throw()
+{
+	return ("Too many numbers entered (3000 or less)");
 };

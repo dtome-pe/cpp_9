@@ -7,10 +7,15 @@
 # include <iostream>
 # include <ctime>
 # include <iomanip>
+# include <sys/time.h>
+
 
 class PmergeMe
 {
 	private:
+
+		std::vector<unsigned int>							_beforeVec;
+
 		std::vector<unsigned int>							_auxVec;
 		std::vector<unsigned int>							_pendVec;
 		std::vector<std::pair<unsigned int, unsigned int> > _pairVec;
@@ -24,21 +29,39 @@ class PmergeMe
 		size_t												_n;
 		bool												_odd;
 
+		double												_timeVec;
+		double												_timeDeque;
+
+		unsigned int										_straggler;
+
 	public:
-		PmergeMe(std::string argv);
+		PmergeMe(char *argv[]);
 		PmergeMe(PmergeMe &copy);
 		PmergeMe& operator=(const PmergeMe &instance);
 		~PmergeMe();
 
-		/*vector*/
-		void	sortVec();
+		void			run(char *argv[]);
+		void			sortVec(char *argv[]);
 
-		void	sortDeque();
+		void			sortDeque(char *argv[]);
 
-		void	printAux();
-		void	printPend();
-		void	printPairs();
-		void	printMain();
+		void			printBefore();
+
+		template <typename Container> void print(const Container& cont)
+		{
+			typename Container::const_iterator it; 
+			std::cout << "[ ";
+			for (it = cont.begin(); it != cont.end(); ++it)
+			{
+				std::cout << *it << " ";
+			}
+			std::cout << "]";
+			std::cout << std::endl;
+		}
+
+		unsigned int	getNumbers();
+		double			getTimeVec();
+		double			getTimeDeque();
 
 		class 	WrongArgumentsException : public std::exception
 		{
@@ -51,6 +74,11 @@ class PmergeMe
 				virtual const char* what() const throw();
 		};
 		class 	DuplicateErrorException : public std::exception
+		{
+			public:
+				virtual const char* what() const throw();
+		};
+		class 	TooManyNumbersException : public std::exception
 		{
 			public:
 				virtual const char* what() const throw();
