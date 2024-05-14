@@ -147,7 +147,7 @@ static size_t bisectVec(const std::vector<unsigned int>& main, unsigned int item
     return left;
 }
 
-static std::vector<unsigned int>insertVec(std::vector<unsigned int> &main, std::vector<unsigned int> &pend,
+static void	insertVec(std::vector<unsigned int> &main, std::vector<unsigned int> &pend,
  unsigned int straggler, std::vector<std::pair<unsigned int, unsigned int> > &pairVec, bool _odd)
 {
 	for (unsigned int i = 0; i < pairVec.size(); i++)
@@ -193,7 +193,7 @@ static std::vector<unsigned int>insertVec(std::vector<unsigned int> &main, std::
 		size_t insertion_point = bisectVec(main, straggler, 0, main.size());
     	main.insert(main.begin() + insertion_point, straggler);
 	}
-	return (main);
+	return ;
 }
 
 static std::vector<std::pair<unsigned int, unsigned int> > mergeVec(std::vector<std::pair<unsigned int, unsigned int> >& left, std::vector<std::pair<unsigned int, unsigned int> >& right)
@@ -301,7 +301,7 @@ static unsigned int	getFirstDeque(std::deque<std::pair<unsigned int, unsigned in
 	return (ret);
 }
 
-static std::deque<unsigned int>insertDeque(std::deque<unsigned int> &main, std::deque<unsigned int> &pend,
+static void	insertDeque(std::deque<unsigned int> &main, std::deque<unsigned int> &pend,
  unsigned int straggler, std::deque<std::pair<unsigned int, unsigned int> > &pairVec, bool _odd)
 {
 	for (unsigned int i = 0; i < pairVec.size(); i++)
@@ -349,7 +349,7 @@ static std::deque<unsigned int>insertDeque(std::deque<unsigned int> &main, std::
 		size_t insertion_point = bisectDeque(main, straggler, 0, main.size());
     	main.insert(main.begin() + insertion_point, straggler);
 	}
-	return (main);
+	return ;
 }
 
 static std::deque<std::pair<unsigned int, unsigned int> > mergeDeque(std::deque<std::pair<unsigned int, unsigned int> >& left, std::deque<std::pair<unsigned int, unsigned int> >& right)
