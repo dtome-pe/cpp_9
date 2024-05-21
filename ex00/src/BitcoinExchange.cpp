@@ -14,7 +14,7 @@ BitcoinExchange::BitcoinExchange()
 	std::getline(csv, line);
 	while (std::getline(csv, line))	
 		_csv.insert(std::make_pair(line.substr(0, line.find(",")), std::atof(line.substr(line.find(",") + 1, line.length()).c_str())));
-	//printCsv();
+	printCsv();
 }
 
 BitcoinExchange::BitcoinExchange(BitcoinExchange &copy)
@@ -67,12 +67,6 @@ static bool wrongYearValue()
 	return false;
 }
 
-static bool wrongYearRange()
-{
-	std::cout << "Error: (Please, specify a year from 2009 to 2024)" << std::endl;
-	return false;
-}
-
 static bool isDigits(const std::string &str)
 {
     return str.find_first_not_of("0123456789") == std::string::npos;
@@ -108,8 +102,6 @@ static bool	checkDate(std::string &date)
 		return (wrongDayValue());
 	else if(month < 1 || month > 12) 
     	return (wrongMonthValue());
-	else if (year < 2009 || year > 2024)
-        return (wrongYearRange());
     if ((month == 4 || month == 6 || month == 9 || month == 11) && day == 31)
         return (wrongDayValue());
     else if ((month == 2) && (year % 4 == 0) && day > 29)
