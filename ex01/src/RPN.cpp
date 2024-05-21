@@ -38,7 +38,7 @@ static bool isToken(const std::string &str)
 
 static void error()
 {	
-	std::cerr << "Error" << std::endl;
+	std::cout << "Error" << std::endl;
 	return ;
 }
 
@@ -74,18 +74,18 @@ void RPN::calculate(std::string argv)
 			int op = getOperator(str);
 			switch (op)
 			{
-			case ADDITION:
-				total = op1 + op2;
-							break;
-			case SUBSTRACTION:
-				total = op1 - op2;
-							break;
-			case MULTIPLICATION:
-				total = op1 * op2;
-							break;
-			case DIVISION:
-				total = op1 / op2;
-							break;
+				case ADDITION:
+					total = op1 + op2;
+								break;
+				case SUBSTRACTION:
+					total = op1 - op2;
+								break;
+				case MULTIPLICATION:
+					total = op1 * op2;
+								break;
+				case DIVISION:
+					total = op1 / op2;
+								break;
 			}
 			_exp.push(total);
 		}
