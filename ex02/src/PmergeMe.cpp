@@ -160,7 +160,6 @@ static void	insertVec(std::vector<unsigned int> &main, std::vector<unsigned int>
 	{
 		std::vector<unsigned int>jacobSeq = buildJacob(pend.size());
 
-		unsigned int				jacobIndex = 3;
 		std::string 				last = "default";
 		std::vector<unsigned int>	indexSeq(1);
 		unsigned int				element;
@@ -187,7 +186,6 @@ static void	insertVec(std::vector<unsigned int> &main, std::vector<unsigned int>
 			size_t insertionPoint = bisectVec(main, element, 0, main.size());
 			main.insert(main.begin() + insertionPoint, element);
 			iterator++;
-			jacobIndex++;
 		}
 	}
 	if (_odd)
@@ -316,7 +314,6 @@ static void	insertDeque(std::deque<unsigned int> &main, std::deque<unsigned int>
 	{
 		std::vector<unsigned int>jacobSeq = buildJacob(pend.size());
 
-		unsigned int				jacobIndex = 3;
 		std::string 				last = "default";
 		std::vector<unsigned int>	indexSeq(1);
 		unsigned int				element;
@@ -345,7 +342,6 @@ static void	insertDeque(std::deque<unsigned int> &main, std::deque<unsigned int>
 			main.insert(main.begin() + insertionPoint, element);
 
 			iterator++;
-			jacobIndex++;
 		}
 	}
 	if (_odd)
