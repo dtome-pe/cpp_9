@@ -34,16 +34,15 @@ BitcoinExchange::~BitcoinExchange()
 }
 
 static bool	checkValue(std::string &value)
-{	
-	//std::cout << "value is: " << value << std::endl;
+{
 	if (std::atof(value.c_str()) < 0)
 	{	
-		std::cerr << "Error: Negative value. (0 to 1000)" << std::endl;
+		std::cout << "Error: Negative value. (0 to 1000)" << std::endl;
 		return (false);
 	}
 	else if(std::atof(value.c_str()) > 1000)
 	{
-		std::cerr << "Error: Value too big. (0 to 1000)" << std::endl;
+		std::cout << "Error: Value too big. (0 to 1000)" << std::endl;
 		return (false);
 	}
 	else
@@ -52,20 +51,31 @@ static bool	checkValue(std::string &value)
 
 static bool wrongDayValue()
 {
-	std::cerr << "Error: Wrong day value" << std::endl;
+	std::cout << "Error: Wrong day value" << std::endl;
 	return false;
 }
 
 static bool wrongMonthValue()
 {
-	std::cerr << "Error: Wrong month value" << std::endl;
+	std::cout << "Error: Wrong month value" << std::endl;
 	return false;
 }
 
 static bool wrongYearValue()
 {
-	std::cerr << "Error: Wrong year value (Please, specify a year from 2009 to 2024)" << std::endl;
+	std::cout << "Error: Wrong year value" << std::endl;
 	return false;
+}
+
+static bool wrongYearRange()
+{
+	std::cout << "Error: (Please, specify a year from 2009 to 2024)" << std::endl;
+	return false;
+}
+
+static bool isDigits(const std::string &str)
+{
+    return str.find_first_not_of("0123456789") == std::string::npos;
 }
 
 static bool	checkDate(std::string &date)
@@ -79,13 +89,19 @@ static bool	checkDate(std::string &date)
 	getline(ss, field, '-');
 	if (field.length() != 4)
 	{
-		std::cerr << "Error: Wrong year length. (YYYY-mm-dd)" << std::endl;
+		std::cout << "Error: Wrong year length. (YYYY-mm-dd)" << std::endl;
 		return (false);
 	}
+	if (!isDigits(field))
+		return wrongYearValue();
 	year = static_cast<int>(std::atof(field.c_str()));
 	getline(ss, field, '-');
+	if (!isDigits(field))
+		return (wrongMonthValue());
 	month = static_cast<int>(std::atof(field.c_str()));
 	field = date.substr(date.find_last_of('-') + 1, date.length());
+	if (!isDigits(field))
+		return (wrongDayValue());
 	day = static_cast<int>(std::atof(field.c_str()));
 	
 	if(day < 1 || day > 31)
@@ -93,7 +109,7 @@ static bool	checkDate(std::string &date)
 	else if(month < 1 || month > 12) 
     	return (wrongMonthValue());
 	else if (year < 2009 || year > 2024)
-        return (wrongYearValue());
+        return (wrongYearRange());
     if ((month == 4 || month == 6 || month == 9 || month == 11) && day == 31)
         return (wrongDayValue());
     else if ((month == 2) && (year % 4 == 0) && day > 29)
@@ -107,13 +123,23 @@ static bool	checkLine(const std::string &line)
 {	
 	if (line.find("|") == std::string::npos)
 	{	
-		std::cerr << "Error: bad input => " << line << std::endl;
+		std::cout << "Error: bad input => " << line << std::endl;
 		return (false);
 	}
 	std::string date = line.substr(0, line.find("|") - 1);
+	if (!date.size() || line[0] == '|')
+	{
+		std::cout << "Error: empty date" << std::endl;
+		return (false);
+	}
 	if (!checkDate(date))
 		return false;
-	std::string value = line.substr(line.find("|") + 2);
+	std::string value = line.substr(line.find("|") + 2, line.size());
+	if (!value.size())
+	{
+		std::cout << "Error: empty value" << line << std::endl;
+		return (false);
+	}
 	if (!checkValue(value))
 		return (false);
 	else
@@ -142,7 +168,13 @@ void	BitcoinExchange::calculate(std::string argv)
 		else
 		{
 			std::multimap<std::string, float>::iterator it = _csv.lower_bound(date);
-			std::cout << date << " => " << value << " = " << value * it->second << std::endl;
+			if (it == _csv.begin())
+        		std::cout << date << " => " << value << " = " << value * it->second << std::endl;
+			else if (it == _csv.end() || it->first != date)
+			{
+				--it;
+				std::cout << date << " => " << value << " = " << value * it->second << std::endl;
+			}
 		}
 	}
 }
@@ -158,9 +190,9 @@ void	BitcoinExchange::printCsv()
 const char*BitcoinExchange::WrongArgumentsException::what(void) const throw()
 {
 	return ("Wrong number of arguments");
-};
+}
 
 const char*BitcoinExchange::FileNotOpenException::what(void) const throw()
 {
 	return ("File could not be opened or found");
-};
+}

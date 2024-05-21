@@ -7,7 +7,7 @@
 class BitcoinExchange
 {
 	private:
-		std::multimap<std::string, float>_csv;
+		std::map<std::string, float>_csv;
 
 	public:
 		BitcoinExchange();

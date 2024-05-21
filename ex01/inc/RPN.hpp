@@ -15,7 +15,6 @@ class RPN
 
 	public:
 		RPN();
-		RPN(unsigned int n);
 		RPN(RPN &copy);
 		RPN& operator=(const RPN &instance);
 		~RPN();

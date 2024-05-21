@@ -1,6 +1,6 @@
 NAME = btc
 SRC = $(addprefix $(DIR_SRC), main.cpp BitcoinExchange.cpp)
-FLAGS = -std=c++98 -Wall -Wextra -Werror
+FLAGS = -std=c++98 -pedantic -Wall -Wextra -Werror
 DEPFLAGS = -MMD -MP
 DIR_OBJ = tmp/
 DIR_SRC = src/
